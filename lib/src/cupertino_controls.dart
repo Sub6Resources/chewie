@@ -136,6 +136,8 @@ class _CupertinoControlsState extends State<CupertinoControls> with SingleTicker
                       _buildProgressBar(),
                       _buildRemaining(iconColor),
                       _buildMuteButton(controller, iconColor, barHeight),
+                      if (chewieController.allowPlaybackSpeedChanging)
+                          _buildSpeedButton(controller, iconColor, barHeight),
                     ],
                   ),
           ),
@@ -279,6 +281,54 @@ class _CupertinoControlsState extends State<CupertinoControls> with SingleTicker
     );
   }
 
+    GestureDetector _buildSpeedButton(
+    VideoPlayerController controller,
+    Color iconColor,
+    double barHeight,
+  ) {
+    return GestureDetector(
+      onTap: () async {
+
+        final chosenSpeed = await showCupertinoModalPopup<double>(
+          context: context,
+          semanticsDismissible: true,
+          useRootNavigator: true,
+          builder: (context) => _PlaybackSpeedDialog(
+            speeds: chewieController.playbackSpeeds,
+            selected: _latestValue.playbackSpeed,
+          ),
+        );
+
+        if (chosenSpeed != null) {
+          controller.setPlaybackSpeed(chosenSpeed);
+        }
+
+      },
+      child: Container(
+        height: barHeight,
+        color: Colors.transparent,
+        padding: const EdgeInsets.only(
+          left: 6.0,
+          right: 8.0,
+        ),
+        margin: const EdgeInsets.only(
+          right: 8.0,
+        ),
+        child: Transform(
+          alignment: Alignment.center,
+          transform: Matrix4.skewY(0.0)
+            ..rotateX(math.pi)
+            ..rotateZ(math.pi * 0.8),
+          child: Icon(
+            Icons.speed,
+            color: iconColor,
+            size: 18.0,
+          ),
+        ),
+      ),
+    );
+  }
+
   Future<void> _initialize() async {
     controller.addListener(_updateState);
 
@@ -367,5 +417,43 @@ class _CupertinoControlsState extends State<CupertinoControls> with SingleTicker
     setState(() {
       _latestValue = controller.value;
     });
+  }
+}
+
+class _PlaybackSpeedDialog extends StatelessWidget {
+  const _PlaybackSpeedDialog({
+    Key key,
+    @required List<double> speeds,
+    @required double selected,
+  })  : _speeds = speeds,
+        _selected = selected,
+        super(key: key);
+
+  final List<double> _speeds;
+  final double _selected;
+
+  @override
+  Widget build(BuildContext context) {
+    final selectedColor = CupertinoTheme.of(context).primaryColor;
+
+    return CupertinoActionSheet(
+      actions: _speeds
+          .map(
+            (e) => CupertinoActionSheetAction(
+              onPressed: () {
+                Navigator.of(context).pop(e);
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if (e == _selected)
+                    Icon(Icons.check, size: 20.0, color: selectedColor),
+                  Text(e.toString()),
+                ],
+              ),
+            ),
+          )
+          .toList(),
+    );
   }
 }

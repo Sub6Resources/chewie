@@ -50,6 +50,10 @@ class ChewieAudioController extends ChangeNotifier {
     this.errorBuilder,
     this.isLive = false,
     this.allowMuting = true,
+    // EDITED
+    this.allowPlaybackSpeedChanging = true,
+    // EDITED
+    this.playbackSpeeds = const [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2],
   }) : assert(videoPlayerController != null, 'You must provide a controller to play a video') {
     _initialize();
   }
@@ -93,6 +97,14 @@ class ChewieAudioController extends ChangeNotifier {
 
   /// Defines if the mute control should be shown
   final bool allowMuting;
+
+  // EDITED
+  /// Defines if the playback speed control should be shown
+  final bool allowPlaybackSpeedChanging;
+
+  // EDITED
+  /// Defines the set of allowed playback speeds user can change
+  final List<double> playbackSpeeds;
 
   static ChewieAudioController of(BuildContext context) {
     final chewieAudioControllerProvider = context.dependOnInheritedWidgetOfExactType<_ChewieAudioControllerProvider>();

@@ -94,8 +94,49 @@ class _MaterialControlsState extends State<MaterialControls> with SingleTickerPr
           _buildPlayPause(controller),
           if (chewieController.isLive) const Expanded(child: Text('LIVE')) else _buildPosition(iconColor),
           if (chewieController.isLive) const SizedBox() else _buildProgressBar(),
+          // EDITED
+          if (chewieController.allowPlaybackSpeedChanging)
+              _buildSpeedButton(controller),
           if (chewieController.allowMuting) _buildMuteButton(controller),
         ],
+      ),
+    );
+  }
+
+  // EDITED
+  Widget _buildSpeedButton(
+    VideoPlayerController controller,
+  ) {
+    return GestureDetector(
+      onTap: () async {
+        final chosenSpeed = await showModalBottomSheet<double>(
+          context: context,
+          isScrollControlled: true,
+          useRootNavigator: true,
+          builder: (context) => _PlaybackSpeedDialog(
+            speeds: chewieController.playbackSpeeds,
+            selected: _latestValue.playbackSpeed,
+          ),
+        );
+
+        if (chosenSpeed != null) {
+          controller.setPlaybackSpeed(chosenSpeed);
+        }
+
+      },
+      child: AnimatedOpacity(
+        opacity: 1.0,
+        duration: const Duration(milliseconds: 300),
+        child: ClipRect(
+          child: Container(
+            height: barHeight,
+            padding: const EdgeInsets.only(
+              left: 8.0,
+              right: 8.0,
+            ),
+            child: const Icon(Icons.speed),
+          ),
+        ),
       ),
     );
   }
@@ -217,6 +258,55 @@ class _MaterialControlsState extends State<MaterialControls> with SingleTickerPr
                   backgroundColor: Theme.of(context).disabledColor),
         ),
       ),
+    );
+  }
+}
+
+// EDITED
+class _PlaybackSpeedDialog extends StatelessWidget {
+  const _PlaybackSpeedDialog({
+    Key key,
+    @required List<double> speeds,
+    @required double selected,
+  })  : _speeds = speeds,
+        _selected = selected,
+        super(key: key);
+
+  final List<double> _speeds;
+  final double _selected;
+
+  @override
+  Widget build(BuildContext context) {
+    final Color selectedColor = Theme.of(context).primaryColor;
+
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const ScrollPhysics(),
+      itemBuilder: (context, index) {
+        final _speed = _speeds[index];
+        return ListTile(
+          dense: true,
+          title: Row(
+            children: [
+              if (_speed == _selected)
+                Icon(
+                  Icons.check,
+                  size: 20.0,
+                  color: selectedColor,
+                )
+              else
+                Container(width: 20.0),
+              const SizedBox(width: 16.0),
+              Text(_speed.toString()),
+            ],
+          ),
+          selected: _speed == _selected,
+          onTap: () {
+            Navigator.of(context).pop(_speed);
+          },
+        );
+      },
+      itemCount: _speeds.length,
     );
   }
 }
