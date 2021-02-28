@@ -14,7 +14,8 @@ class ChewieAudio extends StatelessWidget {
   const ChewieAudio({
     Key key,
     @required this.controller,
-  })  : assert(controller != null, 'You must provide a chewie audio controller'),
+  })  : assert(
+            controller != null, 'You must provide a chewie audio controller'),
         super(key: key);
 
   /// The [ChewieAudioController]
@@ -54,7 +55,10 @@ class ChewieAudioController extends ChangeNotifier {
     this.allowPlaybackSpeedChanging = true,
     // EDITED
     this.playbackSpeeds = const [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2],
-  }) : assert(videoPlayerController != null, 'You must provide a controller to play a video') {
+  })  : assert(videoPlayerController != null,
+            'You must provide a controller to play a video'),
+        assert(playbackSpeeds.every((speed) => speed > 0),
+            'The playbackSpeeds values must all be greater than 0') {
     _initialize();
   }
 
@@ -107,7 +111,8 @@ class ChewieAudioController extends ChangeNotifier {
   final List<double> playbackSpeeds;
 
   static ChewieAudioController of(BuildContext context) {
-    final chewieAudioControllerProvider = context.dependOnInheritedWidgetOfExactType<_ChewieAudioControllerProvider>();
+    final chewieAudioControllerProvider = context
+        .dependOnInheritedWidgetOfExactType<_ChewieAudioControllerProvider>();
 
     return chewieAudioControllerProvider.controller;
   }
@@ -117,7 +122,8 @@ class ChewieAudioController extends ChangeNotifier {
   Future _initialize() async {
     await videoPlayerController.setLooping(looping);
 
-    if ((autoInitialize || autoPlay) && !videoPlayerController.value.initialized) {
+    if ((autoInitialize || autoPlay) &&
+        !videoPlayerController.value.initialized) {
       await videoPlayerController.initialize();
     }
 
@@ -168,5 +174,6 @@ class _ChewieAudioControllerProvider extends InheritedWidget {
   final ChewieAudioController controller;
 
   @override
-  bool updateShouldNotify(_ChewieAudioControllerProvider old) => controller != old.controller;
+  bool updateShouldNotify(_ChewieAudioControllerProvider old) =>
+      controller != old.controller;
 }

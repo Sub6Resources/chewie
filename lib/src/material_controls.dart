@@ -16,7 +16,8 @@ class MaterialControls extends StatefulWidget {
   }
 }
 
-class _MaterialControlsState extends State<MaterialControls> with SingleTickerProviderStateMixin {
+class _MaterialControlsState extends State<MaterialControls>
+    with SingleTickerProviderStateMixin {
   VideoPlayerValue _latestValue;
   double _latestVolume;
   Timer _initTimer;
@@ -92,11 +93,17 @@ class _MaterialControlsState extends State<MaterialControls> with SingleTickerPr
       child: Row(
         children: <Widget>[
           _buildPlayPause(controller),
-          if (chewieController.isLive) const Expanded(child: Text('LIVE')) else _buildPosition(iconColor),
-          if (chewieController.isLive) const SizedBox() else _buildProgressBar(),
+          if (chewieController.isLive)
+            const Expanded(child: Text('LIVE'))
+          else
+            _buildPosition(iconColor),
+          if (chewieController.isLive)
+            const SizedBox()
+          else
+            _buildProgressBar(),
           // EDITED
           if (chewieController.allowPlaybackSpeedChanging)
-              _buildSpeedButton(controller),
+            _buildSpeedButton(controller),
           if (chewieController.allowMuting) _buildMuteButton(controller),
         ],
       ),
@@ -122,7 +129,6 @@ class _MaterialControlsState extends State<MaterialControls> with SingleTickerPr
         if (chosenSpeed != null) {
           controller.setPlaybackSpeed(chosenSpeed);
         }
-
       },
       child: AnimatedOpacity(
         opacity: 1.0,
@@ -161,7 +167,9 @@ class _MaterialControlsState extends State<MaterialControls> with SingleTickerPr
             right: 8.0,
           ),
           child: Icon(
-            (_latestValue != null && _latestValue.volume > 0) ? Icons.volume_up : Icons.volume_off,
+            (_latestValue != null && _latestValue.volume > 0)
+                ? Icons.volume_up
+                : Icons.volume_off,
           ),
         ),
       ),
@@ -187,8 +195,12 @@ class _MaterialControlsState extends State<MaterialControls> with SingleTickerPr
   }
 
   Widget _buildPosition(Color iconColor) {
-    final position = _latestValue != null && _latestValue.position != null ? _latestValue.position : Duration.zero;
-    final duration = _latestValue != null && _latestValue.duration != null ? _latestValue.duration : Duration.zero;
+    final position = _latestValue != null && _latestValue.position != null
+        ? _latestValue.position
+        : Duration.zero;
+    final duration = _latestValue != null && _latestValue.duration != null
+        ? _latestValue.duration
+        : Duration.zero;
 
     return Padding(
       padding: const EdgeInsets.only(right: 24.0),
